@@ -4,30 +4,49 @@ import dev.ankit.productservice.dtos.ExceptionDto;
 import dev.ankit.productservice.dtos.GenericProductDto;
 import dev.ankit.productservice.exceptions.NotFoundException;
 import dev.ankit.productservice.models.Product;
+import dev.ankit.productservice.security.JwtData;
+import dev.ankit.productservice.security.TokenValidator;
 import dev.ankit.productservice.services.ProductService;
+import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/products")
 public class ProductController {
     private ProductService productService;
-
+    private TokenValidator tokenValidator;
     @Autowired
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService,TokenValidator tokenValidator) {
         this.productService = productService;
+        this.tokenValidator = tokenValidator;
     }
 
     @GetMapping("{id}")
-    public GenericProductDto getProductById(@PathVariable("id") Long id) throws NotFoundException {
-        return productService.getProductById(id);
+    public GenericProductDto getProductById(
+         @Nullable @RequestHeader(HttpHeaders.AUTHORIZATION) String authToken,
+            @PathVariable("id") Long id) throws NotFoundException {
+        System.out.println("calling methods");
+        System.out.println("calling methods again");
+        Optional<JwtData>jwtDataOptional = tokenValidator.validateToken(authToken);
+        if(jwtDataOptional.isPresent()){
+          //do whaterever you want to do according to the business logic
+            // can include roles and other things;
+        }
+        GenericProductDto genericProductDto = productService.getProductById(id);
+        if(genericProductDto == null){
+            return new GenericProductDto();
+        }
+        return genericProductDto;
     }
 
 
