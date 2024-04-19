@@ -46,11 +46,11 @@ public class FakeStoreProductService implements ProductService {
 
     @Override
     public GenericProductDto getProductById(Long id) throws NotFoundException {
-        Object userData = restTemplate.getForEntity("http://userservice/users/1",Object.class);
-       GenericProductDto genericProductDtoFromCache = (GenericProductDto) redisTemplate.opsForValue().get(String.valueOf(id)) ;
-       if (genericProductDtoFromCache != null){
-           return genericProductDtoFromCache;
-       }
+//        Object userData = restTemplate.getForEntity("http://userservice/users/1",Object.class);
+//       GenericProductDto genericProductDtoFromCache = (GenericProductDto) redisTemplate.opsForValue().get(String.valueOf(id)) ;
+//       if (genericProductDtoFromCache != null){
+//           return genericProductDtoFromCache;
+//       }
        GenericProductDto genericProductDto = convertFakeStoreDtoToGenericProductDto(
                fakeStoreProductClient.getProductById(id)
        );
